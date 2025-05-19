@@ -10,6 +10,7 @@ from docx import Document
 from datetime import datetime
 import logging
 import platform
+import shutil
 
 # Configuration de base du logging
 logging.basicConfig(
@@ -24,7 +25,7 @@ if platform.system() == "Windows":
     RCLONE_PATH = "C:\\rclone\\rclone.exe"
 else:  # Linux, macOS, etc.
     print("Système d'exploitation détecté: Linux ou macOS")
-    RCLONE_PATH = "/usr/bin/rclone"
+    RCLONE_PATH = shutil.which("rclone")
 
 # Vérification optionnelle
 if not Path(RCLONE_PATH).exists():
