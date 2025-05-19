@@ -27,6 +27,9 @@ else:  # Linux, macOS, etc.
     print("Système d'exploitation détecté: Linux ou macOS")
     RCLONE_PATH = shutil.which("rclone")
 
+print("Système d'exploitation détecté:", platform.system())
+print("Chemin de rclone:", RCLONE_PATH)
+
 # Vérification optionnelle
 if not Path(RCLONE_PATH).exists():
     raise FileNotFoundError(f"rclone introuvable à l'emplacement attendu : {RCLONE_PATH}")
