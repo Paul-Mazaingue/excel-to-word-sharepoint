@@ -14,7 +14,7 @@ RUN mkdir -p temp
 
 # Install rclone
 RUN apt-get update && \
-    apt-get install -y curl && \
+    apt-get install -y curl unzip && \
     curl https://rclone.org/install.sh | bash
 
 # Set environment variables
