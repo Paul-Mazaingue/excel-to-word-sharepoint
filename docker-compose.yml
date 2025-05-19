@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  sharepoint-automation:
+    build: .
+    container_name: word-sharepoint-automation
+    volumes:
+      # Mount for local logs
+      - ./logs:/app/logs
+      # Mount the temp directory to persist downloaded files between restarts
+      - ./temp:/app/temp
+    restart: always
+    environment:
+      # Add any needed environment variables here
+      # Example: credentials could be passed via environment variables
+      - INTERVAL_MINUTES=60
