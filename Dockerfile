@@ -12,6 +12,11 @@ COPY . .
 # Create temp directory for file storage
 RUN mkdir -p temp
 
+# Install rclone
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl https://rclone.org/install.sh | bash
+
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 

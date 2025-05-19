@@ -1,0 +1,11 @@
+
+ETAPE RCLONE
+
+installation via :
+curl https://rclone.org/install.sh | sudo bash
+
+Configuration :
+rclone config
+n
+name: sharepoint
+36
