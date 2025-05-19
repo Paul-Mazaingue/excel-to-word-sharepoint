@@ -21,10 +21,8 @@ logger = logging.getLogger("sharepoint_utils")
 
 # Détecte l'OS
 if platform.system() == "Windows":
-    print("Système d'exploitation détecté: Windows")
     RCLONE_PATH = "C:\\rclone\\rclone.exe"
-else:  # Linux, macOS, etc.
-    print("Système d'exploitation détecté: Linux ou macOS")
+else:
     RCLONE_PATH = shutil.which("rclone")
 
 print("---------------------------------------------")
@@ -32,9 +30,8 @@ print("Système d'exploitation détecté:", platform.system())
 print("Chemin de rclone:", RCLONE_PATH)
 print("---------------------------------------------")
 
-# Vérification optionnelle
-if not Path(RCLONE_PATH).exists():
-    raise FileNotFoundError(f"rclone introuvable à l'emplacement attendu : {RCLONE_PATH}")
+if not RCLONE_PATH or not Path(RCLONE_PATH).exists():
+    raise FileNotFoundError(f"rclone introuvable à l'emplacement attendu ou dans le PATH : {RCLONE_PATH}")
 
 def create_temp_directory():
     """Crée un répertoire temporaire unique pour les opérations de fichiers"""
