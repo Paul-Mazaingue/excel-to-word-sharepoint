@@ -30,8 +30,10 @@ print("Système d'exploitation détecté:", platform.system())
 print("Chemin de rclone:", RCLONE_PATH)
 print("---------------------------------------------")
 
-if not RCLONE_PATH or not Path(RCLONE_PATH).exists():
-    raise FileNotFoundError(f"rclone introuvable à l'emplacement attendu ou dans le PATH : {RCLONE_PATH}")
+if not RCLONE_PATH:
+    raise FileNotFoundError("rclone introuvable dans le PATH système. Veuillez l'installer et l'ajouter au PATH.")
+if not Path(RCLONE_PATH).exists():
+    raise FileNotFoundError(f"rclone trouvé dans le PATH mais le fichier n'existe pas : {RCLONE_PATH}")
 
 def create_temp_directory():
     """Crée un répertoire temporaire unique pour les opérations de fichiers"""
