@@ -3,7 +3,7 @@ version: '3'
 services:
   sharepoint-automation:
     build: .
-    container_name: ec-funding-alert-api
+    container_name: excel-to-word-sharepoint
     volumes:
       # Mount for local logs
       - ./logs:/app/logs
