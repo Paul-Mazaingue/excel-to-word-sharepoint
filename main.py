@@ -72,8 +72,8 @@ def main():
                 safe_name = row['Entreprise/Commune'].replace(' ', '_').lower()
                 word_filename = f"diagnostic_{safe_name}.docx"
             else:
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                word_filename = f"diagnostic_{timestamp}_{index}.docx"
+                logger.info(f"Ligne {index} ignorée : colonne 'Entreprise/Commune' manquante ou vide.")
+                continue
             
             # Vérifier si le fichier existe déjà sur SharePoint
             if check_file_exists_on_sharepoint(remote_word_name, remote_word_folder, word_filename):
