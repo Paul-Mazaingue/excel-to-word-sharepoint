@@ -12,10 +12,12 @@ COPY . .
 # Create temp directory for file storage
 RUN mkdir -p temp
 
-# Install rclone
+# Install rclone & pandoc & wkhtmltopdf
 RUN apt-get update && \
-    apt-get install -y curl unzip && \
-    curl https://rclone.org/install.sh | bash
+    apt-get install -y curl unzip pandoc wkhtmltopdf && \
+    curl https://rclone.org/install.sh | bash && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
