@@ -19,12 +19,11 @@ import os
 # Configuration de l'intervalle (en minutes)
 interval_minutes = int(os.environ.get('INTERVAL_MINUTES', 60))  # Configurable via variable d'environnement
 
-# Configuration
-remote_exel_name = "Onedrive"
+# Configuration - Utiliser SharePoint pour le fichier Excel
+remote_sharepoint_name = "sharepoint"
 remote_exel_file_path = "diagnostic_maturite.xlsx"
 local_tmp_dir = "temp"
-remote_word_name = "sharepoint"
-remote_word_folder = "files"
+remote_word_folder = "Diagnostics"
 remote_word_model = "modele_diagnostic_maturite.docx"
 
 # Configurer le logger
@@ -32,6 +31,9 @@ logger = logging.getLogger("main")
 logger.setLevel(logging.INFO)
 
 def main():
+
+    print("--------------------------")
+    print("Remote folder: ", remote_word_folder)
     # Créer le répertoire temporaire local s'il n'existe pas
     local_dir = Path(local_tmp_dir)
     local_dir.mkdir(exist_ok=True)
@@ -39,9 +41,9 @@ def main():
     # Supression des fichiers temporaires
     clean_directory(local_dir)
     
-    # 1. Télécharger le fichier Excel depuis OneDrive
+    # 1. Télécharger le fichier Excel depuis SharePoint
     logger.info(f"Téléchargement du fichier Excel {remote_exel_file_path}...")
-    excel_file = download_file_from_onedrive(remote_exel_name, remote_exel_file_path, local_dir)
+    excel_file = download_file_from_onedrive(remote_sharepoint_name, remote_exel_file_path, local_dir)
     
     if not excel_file:
         logger.error("Impossible de télécharger le fichier Excel. Arrêt du traitement.")
@@ -49,7 +51,7 @@ def main():
     
     # 2. Télécharger le modèle Word depuis SharePoint (à chaque fois)
     logger.info(f"Téléchargement du modèle Word {remote_word_model} depuis SharePoint...")
-    local_model_path = download_file_from_onedrive(remote_word_name, remote_word_model, local_dir)
+    local_model_path = download_file_from_onedrive(remote_sharepoint_name, remote_word_model, local_dir)
     
     if not local_model_path:
         logger.error("Impossible de télécharger le modèle Word. Arrêt du traitement.")
@@ -77,7 +79,7 @@ def main():
                 continue
             
             # Vérifier si le fichier existe déjà sur SharePoint
-            if check_file_exists_on_sharepoint(remote_word_name, remote_word_folder, word_filename):
+            if check_file_exists_on_sharepoint(remote_sharepoint_name, remote_word_folder, word_filename):
                 logger.info(f"Le fichier {word_filename} existe déjà sur SharePoint. Traitement ignoré.")
                 continue
             
@@ -91,7 +93,7 @@ def main():
                 
             # Upload du fichier Word généré vers SharePoint
             logger.info(f"Téléversement du fichier Word {word_filename} vers SharePoint...")
-            upload_success = upload_file_to_sharepoint(result_path, remote_word_name, remote_word_folder)
+            upload_success = upload_file_to_sharepoint(result_path, remote_sharepoint_name, remote_word_folder)
             
             if upload_success:
                 logger.info(f"Fichier Word {word_filename} téléversé avec succès.")
@@ -105,7 +107,7 @@ def main():
                 # Upload du fichier PDF généré vers SharePoint
                 pdf_filename = pdf_path.name
                 logger.info(f"Téléversement du fichier PDF {pdf_filename} vers SharePoint...")
-                pdf_upload_success = upload_file_to_sharepoint(pdf_path, remote_word_name, remote_word_folder)
+                pdf_upload_success = upload_file_to_sharepoint(pdf_path, remote_sharepoint_name, remote_word_folder)
                 
                 if pdf_upload_success:
                     logger.info(f"Fichier PDF {pdf_filename} téléversé avec succès.")

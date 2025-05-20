@@ -19,8 +19,25 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Create directory for rclone config
+RUN mkdir -p /root/.config/rclone
+
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
+
+# Create entrypoint script
+RUN echo '#!/bin/bash\n\
+# Check if rclone.conf exists in the host and copy it\n\
+if [ -f /tmp/rclone.conf ]; then\n\
+  echo "Found rclone.conf, copying to container"\n\
+  cp /tmp/rclone.conf /root/.config/rclone/rclone.conf\n\
+fi\n\
+\n\
+# Execute the main command\n\
+exec "$@"' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
+
+# Set the entrypoint
+ENTRYPOINT ["/app/entrypoint.sh"]
 
 # Run the application
 CMD ["python", "main.py"]

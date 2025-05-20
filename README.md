@@ -49,17 +49,6 @@ curl https://rclone.org/install.sh | sudo bash
    - Sélectionnez `4` (SharePoint - recherchez votre site)
    - Suivez les instructions à l'écran pour terminer l'authentification
 
-### Configuration pour OneDrive personnel
-
-1. Lancez à nouveau la configuration:
-   ```bash
-   rclone config
-   ```
-
-2. Suivez les mêmes étapes mais:
-   - Utilisez un nom différent, par exemple `onedrive`
-   - Sélectionnez `1` (OneDrive personnel) au lieu de `4`
-
 ### Copier la configuration Rclone dans le conteneur Docker
 
 Si vous exécutez l'application dans Docker, copiez votre configuration:
@@ -74,7 +63,8 @@ L'application:
 1. Télécharge régulièrement un fichier Excel depuis OneDrive
 2. Télécharge un modèle Word depuis SharePoint
 3. Génère un document Word pour chaque ligne de l'Excel
-4. Téléverse les documents générés vers SharePoint
+4. Convertit automatiquement chaque document Word généré en PDF
+5. Téléverse les documents Word et PDF générés vers SharePoint
 
 Pour lancer l'application:
 ```bash
