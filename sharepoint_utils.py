@@ -159,17 +159,32 @@ def extract_excel_row(excel_file_path, row_index=-1):
         if df.empty:
             logger.error(f"Le fichier Excel {excel_file_path} est vide")
             return None
-            
-        # Vérifier que l'index demandé est valide
-        if abs(row_index) > len(df):
-            logger.error(f"Index de ligne invalide: {row_index}, max: {len(df)}")
+        
+        # Fonction pour vérifier si une ligne est vide
+        def is_row_empty(row_data):
+            return row_data.fillna('').str.strip().eq('').all()
+        
+        # Déterminer l'index de départ
+        if row_index < 0:
+            start_index = len(df) + row_index
+        else:
+            start_index = row_index
+        
+        # S'assurer que l'index est dans les limites
+        if start_index < 0 or start_index >= len(df):
+            logger.error(f"Index de ligne invalide: {row_index}, max: {len(df) - 1}")
             return None
-            
-        # Extraire la ligne (déjà en str grâce à dtype=str) et remplacer NaN par ''
-        row_data = df.iloc[row_index].fillna('')
-
-        logger.info(f"Ligne extraite du fichier Excel avec succès: {row_index}")
-        return row_data
+        
+        # Chercher la première ligne non-vide à partir de l'index spécifié
+        for i in range(start_index, len(df)):
+            row_data = df.iloc[i].fillna('')
+            if not is_row_empty(row_data):
+                logger.info(f"Ligne non-vide extraite du fichier Excel: index {i}")
+                return row_data
+        
+        # Si on arrive ici, toutes les lignes à partir de start_index sont vides
+        logger.warning(f"Toutes les lignes à partir de l'index {start_index} sont vides dans le fichier Excel")
+        return None
         
     except Exception as e:
         logger.error(f"Erreur lors de l'extraction de données Excel: {str(e)}")
