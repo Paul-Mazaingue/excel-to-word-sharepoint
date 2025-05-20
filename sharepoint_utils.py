@@ -442,23 +442,46 @@ def convert_word_to_pdf(word_file_path):
         # Créer le chemin pour le PDF (même nom que le Word mais avec extension .pdf)
         pdf_file_path = word_file_path.with_suffix('.pdf')
         
-        # Utiliser python-docx2pdf pour la conversion
+        # Option 1: Utiliser python-docx2pdf sur Windows
+        if platform.system() == "Windows":
+            try:
+                import docx2pdf
+                logger.info(f"Conversion du document Word en PDF avec MS Word: {word_file_path}")
+                docx2pdf.convert(str(word_file_path), str(pdf_file_path))
+                if pdf_file_path.exists():
+                    logger.info(f"PDF généré avec succès: {pdf_file_path}")
+                    return pdf_file_path
+            except ImportError:
+                logger.warning("Module docx2pdf non disponible. Essai de méthode alternative...")
+        else:
+            logger.info("Système non-Windows détecté, utilisation d'une méthode alternative...")
+
+        # Option 2: Utiliser pypandoc (nécessite l'installation de pandoc mais sans MS Word/LibreOffice)
         try:
-            import docx2pdf
-            logger.info(f"Conversion du document Word en PDF: {word_file_path}")
-            docx2pdf.convert(str(word_file_path), str(pdf_file_path))
-            
+            import pypandoc
+            logger.info(f"Tentative de conversion avec pypandoc: {word_file_path}")
+            pypandoc.convert_file(
+                str(word_file_path),
+                'pdf',
+                outputfile=str(pdf_file_path),
+                extra_args=['--pdf-engine=wkhtmltopdf']
+            )
             if pdf_file_path.exists():
-                logger.info(f"PDF généré avec succès: {pdf_file_path}")
+                logger.info(f"PDF généré avec succès via pypandoc: {pdf_file_path}")
                 return pdf_file_path
-            else:
-                logger.error(f"La conversion en PDF a échoué: fichier non trouvé")
-                return None
-                
-        except ImportError:
-            logger.error("Module docx2pdf non disponible. Installation requise: pip install docx2pdf")
-            return None
+        except Exception as pandoc_err:
+            logger.warning(f"Conversion avec pypandoc échouée: {pandoc_err}")
+
+        # Option 3: Utiliser un service web (si disponible et configuré)
+        # Cette partie nécessiterait une implémentation spécifique selon le service choisi
+        
+        # Si toutes les méthodes ont échoué et qu'on est sur Linux, suggérer l'installation de LibreOffice
+        if platform.system() != "Windows":
+            logger.error("La conversion a échoué. Sur Linux, l'installation de LibreOffice est recommandée:")
+            logger.error("sudo apt-get install -y libreoffice")
             
+        return None
+                
     except Exception as e:
         logger.error(f"Erreur lors de la conversion en PDF: {str(e)}")
         return None
