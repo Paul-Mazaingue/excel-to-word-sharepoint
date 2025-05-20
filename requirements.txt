@@ -5,3 +5,4 @@ requests
 schedule
 docx2pdf
 pypandoc
+pandoc
