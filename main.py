@@ -5,7 +5,8 @@ from sharepoint_utils import (
     create_word_from_template,
     upload_file_to_sharepoint,
     create_temp_directory,
-    clean_directory
+    clean_directory,
+    convert_word_to_pdf
 )
 from pathlib import Path
 import pandas as pd
@@ -88,15 +89,31 @@ def main():
                 logger.error(f"Échec de création du document Word pour la ligne {index}.")
                 continue
                 
-            # Upload du fichier généré vers SharePoint
-            logger.info(f"Téléversement du fichier {word_filename} vers SharePoint...")
+            # Upload du fichier Word généré vers SharePoint
+            logger.info(f"Téléversement du fichier Word {word_filename} vers SharePoint...")
             upload_success = upload_file_to_sharepoint(result_path, remote_word_name, remote_word_folder)
             
             if upload_success:
-                logger.info(f"Fichier {word_filename} téléversé avec succès.")
+                logger.info(f"Fichier Word {word_filename} téléversé avec succès.")
             else:
-                logger.error(f"Échec du téléversement du fichier {word_filename}.")
-        
+                logger.error(f"Échec du téléversement du fichier Word {word_filename}.")
+            
+            # Conversion du fichier Word en PDF
+            pdf_path = convert_word_to_pdf(result_path)
+            
+            if pdf_path:
+                # Upload du fichier PDF généré vers SharePoint
+                pdf_filename = pdf_path.name
+                logger.info(f"Téléversement du fichier PDF {pdf_filename} vers SharePoint...")
+                pdf_upload_success = upload_file_to_sharepoint(pdf_path, remote_word_name, remote_word_folder)
+                
+                if pdf_upload_success:
+                    logger.info(f"Fichier PDF {pdf_filename} téléversé avec succès.")
+                else:
+                    logger.error(f"Échec du téléversement du fichier PDF {pdf_filename}.")
+            else:
+                logger.error(f"Échec de conversion en PDF pour la ligne {index}.")
+                
         logger.info("Traitement terminé avec succès.")
         return True
             

@@ -423,6 +423,46 @@ def create_word_from_template(template_path, data_row, output_path=None):
         logger.error(f"Erreur lors de la création du document Word: {str(e)}")
         return None
 
+def convert_word_to_pdf(word_file_path):
+    """Convertit un document Word en PDF
+    
+    Args:
+        word_file_path (Path): Chemin local du fichier Word
+    
+    Returns:
+        Path: Le chemin du fichier PDF généré ou None en cas d'échec
+    """
+    try:
+        # Vérifier que le fichier Word existe
+        word_file_path = Path(word_file_path)
+        if not word_file_path.exists():
+            logger.error(f"Le fichier Word n'existe pas: {word_file_path}")
+            return None
+        
+        # Créer le chemin pour le PDF (même nom que le Word mais avec extension .pdf)
+        pdf_file_path = word_file_path.with_suffix('.pdf')
+        
+        # Utiliser python-docx2pdf pour la conversion
+        try:
+            import docx2pdf
+            logger.info(f"Conversion du document Word en PDF: {word_file_path}")
+            docx2pdf.convert(str(word_file_path), str(pdf_file_path))
+            
+            if pdf_file_path.exists():
+                logger.info(f"PDF généré avec succès: {pdf_file_path}")
+                return pdf_file_path
+            else:
+                logger.error(f"La conversion en PDF a échoué: fichier non trouvé")
+                return None
+                
+        except ImportError:
+            logger.error("Module docx2pdf non disponible. Installation requise: pip install docx2pdf")
+            return None
+            
+    except Exception as e:
+        logger.error(f"Erreur lors de la conversion en PDF: {str(e)}")
+        return None
+
 def upload_file_to_sharepoint(local_file_path, remote_name, remote_folder, overwrite=True):
     """Téléverse un fichier sur SharePoint
     
