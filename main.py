@@ -71,11 +71,11 @@ def main():
             row = row.fillna('')
             
             # Générer un nom de fichier basé sur une colonne de l'Excel ou utiliser un identifiant unique
-            if 'Entreprise/Commune' in row and row['Entreprise/Commune']:
-                safe_name = row['Entreprise/Commune'].replace(' ', '_').lower()
+            if 'Organisme' in row and row['Organisme']:
+                safe_name = row['Organisme'].replace(' ', '_').lower()
                 word_filename = f"diagnostic_{safe_name}.docx"
             else:
-                logger.info(f"Ligne {index} ignorée : colonne 'Entreprise/Commune' manquante ou vide.")
+                logger.info(f"Ligne {index} ignorée : colonne 'Organisme' manquante ou vide.")
                 continue
             
             # Vérifier si le fichier existe déjà sur SharePoint
