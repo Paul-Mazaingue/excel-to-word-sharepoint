@@ -18,6 +18,8 @@ import os
 
 # Configuration de l'intervalle (en minutes)
 interval_minutes = int(os.environ.get('INTERVAL_MINUTES', 60))  # Configurable via variable d'environnement
+# Configuration pour activer/désactiver la conversion PDF
+convert_to_pdf_enabled = False
 
 # Configuration - Utiliser SharePoint pour le fichier Excel
 remote_sharepoint_name = "sharepoint"
@@ -100,21 +102,24 @@ def main():
             else:
                 logger.error(f"Échec du téléversement du fichier Word {word_filename}.")
             
-            # Conversion du fichier Word en PDF
-            pdf_path = convert_word_to_pdf(result_path)
-            
-            if pdf_path:
-                # Upload du fichier PDF généré vers SharePoint
-                pdf_filename = pdf_path.name
-                logger.info(f"Téléversement du fichier PDF {pdf_filename} vers SharePoint...")
-                pdf_upload_success = upload_file_to_sharepoint(pdf_path, remote_sharepoint_name, remote_word_folder)
+            # Conversion du fichier Word en PDF seulement si activé
+            if convert_to_pdf_enabled:
+                pdf_path = convert_word_to_pdf(result_path)
                 
-                if pdf_upload_success:
-                    logger.info(f"Fichier PDF {pdf_filename} téléversé avec succès.")
+                if pdf_path:
+                    # Upload du fichier PDF généré vers SharePoint
+                    pdf_filename = pdf_path.name
+                    logger.info(f"Téléversement du fichier PDF {pdf_filename} vers SharePoint...")
+                    pdf_upload_success = upload_file_to_sharepoint(pdf_path, remote_sharepoint_name, remote_word_folder)
+                    
+                    if pdf_upload_success:
+                        logger.info(f"Fichier PDF {pdf_filename} téléversé avec succès.")
+                    else:
+                        logger.error(f"Échec du téléversement du fichier PDF {pdf_filename}.")
                 else:
-                    logger.error(f"Échec du téléversement du fichier PDF {pdf_filename}.")
+                    logger.error(f"Échec de conversion en PDF pour la ligne {index}.")
             else:
-                logger.error(f"Échec de conversion en PDF pour la ligne {index}.")
+                logger.info(f"Conversion en PDF désactivée pour {word_filename}.")
                 
         logger.info("Traitement terminé avec succès.")
         return True
